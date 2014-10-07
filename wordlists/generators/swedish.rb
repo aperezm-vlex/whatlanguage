@@ -6,7 +6,7 @@
 # under a Creative Commons ShareAlike license (http://creativecommons.org/licenses/sa/1.0/).
 
 URL = "http://hem.bredband.net/dsso1/dsso-1.29.txt"
-WORDLIST = File.join(File.dirname(__FILE__), '../swedish')
+WORDLIST = File.join(File.dirname(__FILE__), '../SV')
 
 require "open-uri"
 require "iconv"

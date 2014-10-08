@@ -30,10 +30,17 @@ class WhatLanguage
   
   # Very inefficient method for now.. but still beats the non-Bloom alternatives.
   # Change to better bit comparison technique later..
-  def process_text(text)
+  def process_text(text, opts = {})
+    opts[:min_words_to_check] ||= 4
+    opts[:steps_before_check] ||= 4
+    opts[:confiable_ratio] ||= 0.5
+    opts[:min_difference_words] ||= 50
+    opts[:min_word_length] ||= 1
+
     results = Hash.new(0)
     it = 0
     to_lowercase(text).split.each do |word|
+      next if word.size < opts[:min_word_length]
       it += 1
 
       languages.each do |lang|
@@ -41,11 +48,11 @@ class WhatLanguage
       end
 
       # Every now and then check to see if we have a really convincing result.. if so, exit early.
-      if it % 4 == 0 && results.size > 1
+      if it % opts[:steps_before_check] == 0 && results.size > 1
         top_results = results.sort_by{|a,b| -b}[0..1]
         
         # Next line may need some tweaking one day..
-        break if top_results[0][1] > 4 && ((top_results[0][1] > top_results[1][1] * 2) || (top_results[0][1] - top_results[1][1] > 25))
+        break if top_results[0][1] > opts[:min_words_to_check] && ((top_results[0][1] > top_results[1][1] * (1/opts[:confiable_ratio])) || (top_results[0][1] - top_results[1][1] > opts[:min_difference_words]))
       end
       
       #break if it > 100
@@ -53,8 +60,8 @@ class WhatLanguage
     results
   end
   
-  def language(text)
-    process_text(text).max { |a,b| a[1] <=> b[1] }.first rescue nil
+  def language(text, opts = {})
+    process_text(text, opts).max { |a,b| a[1] <=> b[1] }.first rescue nil
   end
   
   def self.filter_from_dictionary(filename)

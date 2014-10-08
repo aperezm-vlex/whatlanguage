@@ -34,7 +34,8 @@ class WhatLanguage
     opts[:min_words_to_check] ||= 4
     opts[:steps_before_check] ||= 4
     opts[:confiable_ratio] ||= 0.5
-    opts[:min_difference_words] ||= 50
+    opts[:min_words_difference] ||= 50
+    opts[:enable_words_difference] ||= true
     opts[:min_word_length] ||= 1
 
     results = Hash.new(0)
@@ -52,7 +53,7 @@ class WhatLanguage
         top_results = results.sort_by{|a,b| -b}[0..1]
         
         # Next line may need some tweaking one day..
-        break if top_results[0][1] > opts[:min_words_to_check] && ((top_results[0][1] > top_results[1][1] * (1/opts[:confiable_ratio])) || (top_results[0][1] - top_results[1][1] > opts[:min_difference_words]))
+        break if top_results[0][1] > opts[:min_words_to_check] && ((top_results[0][1] > top_results[1][1] * (1/opts[:confiable_ratio])) ||(opts[:enable_words_difference] && (top_results[0][1] - top_results[1][1] > opts[:min_words_difference])))
       end
       
       #break if it > 100
